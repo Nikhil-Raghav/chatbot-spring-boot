@@ -10,7 +10,7 @@ pipeline {
         IMAGE_NAME   = "prajwal8651/itkannadigaru-blogpost:${GIT_COMMIT}"
         AWS_REGION   = "us-west-2"
         CLUSTER_NAME = "itkannadigaru-cluster"
-        NAMESPACE    = "microdegree"
+        NAMESPACE    = "java-blogpost"
     }
 
     stages {
@@ -95,12 +95,12 @@ pipeline {
             steps {
                 withKubeConfig(
                     caCertificate: '',
-                    clusterName: 'itkannadigaru-cluster',
+                    clusterName: 'AskAI-cluster',
                     contextName: '',
                     credentialsId: 'kube',
-                    namespace: 'microdegree',
+                    namespace: 'java-blogpost',
                     restrictKubeConfigAccess: false,
-                    serverUrl: 'https://B5C5676A4A23F5E9424B27B485E2AD73.gr7.us-west-2.eks.amazonaws.com'
+                    serverUrl: 'https://440D50D3C5AFE956D6AE5085DDF14988.gr7.us-west-2.eks.amazonaws.com'
                 ) {
                     sh '''
                         sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml
