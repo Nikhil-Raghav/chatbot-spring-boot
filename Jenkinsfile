@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME   = "manojkrishnappa/itkannadigaru-blogpost:${GIT_COMMIT}"
+        IMAGE_NAME   = "prajwal8651/itkannadigaru-blogpost:${GIT_COMMIT}"
         AWS_REGION   = "us-west-2"
         CLUSTER_NAME = "itkannadigaru-cluster"
         NAMESPACE    = "microdegree"
@@ -17,7 +17,7 @@ pipeline {
 
         stage('git-checkout') {
             steps {
-                git url: 'https://github.com/ManojKRISHNAPPA/ITKannadigaru-Java-based-app.git', branch: 'prod'
+                git url: 'https://github.com/Prajwal8651/spring-boot-app.git', branch: 'main'
             }
         }
 
@@ -46,26 +46,15 @@ pipeline {
             }
         }
 
-        stage('Docker-testing') {
-            steps {
-                sh '''
-                    CONTAINER_NAME=itkannadigaru-blogpost-test
+        stage('Test Docker Image') {
+    steps {
+        sh '''
+            docker rm -f blogpost-container || true
+            docker run -d --name blogpost-container -p 9001:8501 ${IMAGE_NAME}
+        '''
+    }
+}
 
-                    echo "Checking if container exists..."
-                    if docker ps -a --format '{{.Names}}' | grep -w $CONTAINER_NAME > /dev/null; then
-                        echo "Old container found. Stopping and removing..."
-                        docker stop $CONTAINER_NAME || true
-                        docker rm   $CONTAINER_NAME || true
-                    fi
-
-                    echo "Creating fresh container..."
-                    docker run -it -d \
-                      --name $CONTAINER_NAME \
-                      -p 9000:8080 \
-                      ${IMAGE_NAME}
-                '''
-            }
-        }
 
         stage('Login to Docker Hub') {
             steps {
