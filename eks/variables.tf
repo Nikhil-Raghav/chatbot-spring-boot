@@ -1,5 +1,5 @@
 variable "ssh_key_name" {
   description = "use your own ssh keypair"
   type        = string
-  default     = "Project-genAI"
+  default     = "ProjectGenAi"
 }
