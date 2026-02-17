@@ -7,9 +7,9 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME   = "prajwal8651/itkannadigaru-blogpost:${GIT_COMMIT}"
+        IMAGE_NAME   = "nikhil-raghav/itkannadigaru-blogpost:${GIT_COMMIT}"
         AWS_REGION   = "us-west-2"
-        CLUSTER_NAME = "AskAI-cluster"
+        CLUSTER_NAME = "DevOpsDiaries-cluster"
         NAMESPACE    = "java-blogpost"
     }
 
@@ -17,7 +17,7 @@ pipeline {
 
         stage('git-checkout') {
             steps {
-                git url: 'https://github.com/Prajwal8651/spring-boot-app.git', branch: 'main'
+                git url: 'https://github.com/Nikhil-Raghav/chatbot-spring-boot.git', branch: 'main'
             }
         }
 
@@ -46,14 +46,14 @@ pipeline {
             }
         }
 
-        stage('Test Docker Image') {
-    steps {
-        sh '''
-            docker rm -f blogpost-container || true
-            docker run -d --name blogpost-container -p 9001:8501 ${IMAGE_NAME}
-        '''
-    }
-}
+       // stage('Test Docker Image') {
+    //steps {
+      //  sh '''
+        //    docker rm -f blogpost-container || true
+          //  docker run -d --name blogpost-container -p 9001:8501 ${IMAGE_NAME}
+       // '''
+   // }
+//}
 
 
         stage('Login to Docker Hub') {
@@ -93,15 +93,15 @@ pipeline {
 
         stage('Deploy to EKS cluster') {
             steps {
-                withKubeConfig(
-                    caCertificate: '',
-                    clusterName: 'AskAI-cluster',
-                    contextName: '',
-                    credentialsId: 'kube',
-                    namespace: 'java-blogpost',
-                    restrictKubeConfigAccess: false,
-                    serverUrl: 'https://440D50D3C5AFE956D6AE5085DDF14988.gr7.us-west-2.eks.amazonaws.com'
-                ) {
+               withKubeConfig
+               (caCertificate: '', 
+               clusterName: ' DevOpsDiaries-cluster', 
+               contextName: '', 
+               credentialsId: '', 
+               namespace: 'java-blogpost', 
+               restrictKubeConfigAccess: false, 
+               serverUrl: 'https://467324461E788FAAF1B9A0571F09DCC5.gr7.us-west-2.eks.amazonaws.com') {
+} {
                     sh '''
                         sed -i "s|replace|${IMAGE_NAME}|g" deployment.yml
                         kubectl apply -f deployment.yml -n ${NAMESPACE}
