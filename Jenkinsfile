@@ -97,7 +97,7 @@ pipeline {
                (caCertificate: '', 
                clusterName: ' DevOpsDiaries-cluster', 
                contextName: '', 
-               credentialsId: '', 
+               credentialsId: 'kube', 
                namespace: 'java-blogpost', 
                restrictKubeConfigAccess: false, 
                serverUrl: 'https://467324461E788FAAF1B9A0571F09DCC5.gr7.us-west-2.eks.amazonaws.com') {
