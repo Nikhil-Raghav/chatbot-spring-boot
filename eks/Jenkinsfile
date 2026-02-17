@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir('terraform') {
-                    git url: 'https://github.com/Prajwal8651/project-chatbot.git',
+                    git url: 'https://github.com/Nikhil-Raghav/chatbot-spring-boot.git',
                         branch: 'Iac-devenv'
                 }
             }
