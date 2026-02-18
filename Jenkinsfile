@@ -112,16 +112,24 @@ pipeline {
 
         stage('Deploy to EKS cluster'){
             steps{
-                withKubeConfig(credentialsId: 'kube', namespace: 'java-blogpost'){
-                    sh "sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml"
-                    sh "kubectl apply -f deployment.yml -n ${NAMESPACE}"
-                }
+               withKubeConfig(caCertificate: '', 
+               clusterName: 'DevOpsDiaries-cluster', 
+               contextName: '', 
+               credentialsId: 'kube', 
+               namespace: 'java-blogpost', 
+               restrictKubeConfigAccess: false, 
+               serverUrl: 'https://7D363F6AD9325B22C3BCB5CE2B999F97.gr7.us-west-2.eks.amazonaws.com') {
+                    sh " sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml "
+                    sh " kubectl apply -f deployment.yml -n ${NAMESPACE}"
+}
             }
         }
 
         stage('verify') {
             steps {
-                withKubeConfig(credentialsId: 'kube', namespace: 'java-blogpost') {
+                withKubeConfig(caCertificate: '', clusterName: 'DevOpsDiaries-cluster', contextName: '', credentialsId: 'kube', namespace: 'java-blogpost', restrictKubeConfigAccess: false, serverUrl: 'https://7D363F6AD9325B22C3BCB5CE2B999F97.gr7.us-west-2.eks.amazonaws.com') {
+    // some block
+}
                     sh '''
                         kubectl get pods -n ${NAMESPACE}
                         kubectl get svc  -n ${NAMESPACE}
