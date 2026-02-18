@@ -33,8 +33,8 @@ pipeline {
                 withSonarQubeEnv('sonarqube-server') {
                     sh '''
                     mvn sonar:sonar \
-                    -Dsonar.projectKey=blogpost \
-                    -Dsonar.projectName=blogpost
+                    -Dsonar.projectKey=chatbot-spring-boot \
+                    -Dsonar.projectName=chatbot-spring-boot
                     '''
                 }
             }
