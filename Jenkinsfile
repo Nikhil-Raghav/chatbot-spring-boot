@@ -127,8 +127,13 @@ pipeline {
 
         stage('verify') {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: 'DevOpsDiaries-cluster', contextName: '', credentialsId: 'kube', namespace: 'java-blogpost', restrictKubeConfigAccess: false, serverUrl: 'https://7D363F6AD9325B22C3BCB5CE2B999F97.gr7.us-west-2.eks.amazonaws.com') {
-    // some block
+                withKubeConfig(caCertificate: '', 
+                clusterName: 'DevOpsDiaries-cluster',
+                contextName: '', 
+                credentialsId: 'kube',
+                namespace: 'java-blogpost',
+                restrictKubeConfigAccess: false,
+                serverUrl: 'https://7D363F6AD9325B22C3BCB5CE2B999F97.gr7.us-west-2.eks.amazonaws.com') {
                 }
                     sh '''
                         kubectl get pods -n ${NAMESPACE}
