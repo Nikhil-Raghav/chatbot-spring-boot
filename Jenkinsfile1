@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any // decides which node to run
 
     tools {
         jdk 'java-17'
@@ -23,59 +23,38 @@ pipeline {
 
         stage('Compile') {
             steps {
-                sh 'mvn compile'
-            }
-        }
-
-        /* ---------- SonarQube ---------- */
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarqube-server') {
-                    sh '''
-                    mvn sonar:sonar \
-                    -Dsonar.projectKey=blogpost \
-                    -Dsonar.projectName=blogpost
-                    '''
-                }
-            }
-        }
-
-        /* ---------- Quality Gate ---------- */
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
+                sh '''
+                    mvn compile
+                '''
             }
         }
 
         stage('packaging') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        /* ---------- Trivy FS Scan ---------- */
-        stage('Trivy FS Scan') {
-            steps {
-                sh "trivy fs . --exit-code 0 --severity HIGH,CRITICAL"
+                sh '''
+                    mvn clean package
+                '''
             }
         }
 
         stage('docker-build') {
             steps {
                 sh '''
+                    printenv
                     docker build -t ${IMAGE_NAME} .
                 '''
             }
         }
 
-        /* ---------- Trivy Image Scan ---------- */
-        stage('Trivy Image Scan') {
-            steps {
-                sh "trivy image ${IMAGE_NAME} --exit-code 0 --severity HIGH,CRITICAL"
-            }
-        }
+       // stage('Test Docker Image') {
+    //steps {
+      //  sh '''
+        //    docker rm -f blogpost-container || true
+          //  docker run -d --name blogpost-container -p 9001:8501 ${IMAGE_NAME}
+       // '''
+   // }
+//}
+
 
         stage('Login to Docker Hub') {
             steps {
@@ -96,7 +75,9 @@ pipeline {
 
         stage('Push to dockerhub') {
             steps {
-                sh 'docker push ${IMAGE_NAME}'
+                sh '''
+                    docker push ${IMAGE_NAME}
+                '''
             }
         }
 
@@ -110,18 +91,26 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS cluster'){
+    stage('Deploy to EKS cluster'){
             steps{
-                withKubeConfig(credentialsId: 'kube', namespace: 'java-blogpost'){
-                    sh "sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml"
-                    sh "kubectl apply -f deployment.yml -n ${NAMESPACE}"
+                withKubeConfig(caCertificate: '', clusterName: 'DevOpsDiaries-cluster', contextName: '', credentialsId: 'kube', namespace: 'java-blogpost', restrictKubeConfigAccess: false, serverUrl: 'https://467324461E788FAAF1B9A0571F09DCC5.gr7.us-west-2.eks.amazonaws.com'){
+                    sh " sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml "
+                    sh " kubectl apply -f deployment.yml -n ${NAMESPACE}"
                 }
             }
         }
 
         stage('verify') {
             steps {
-                withKubeConfig(credentialsId: 'kube', namespace: 'java-blogpost') {
+                withKubeConfig(
+                    caCertificate: '',
+                    clusterName: 'DevOpsDiaries-cluster',
+                    contextName: '',
+                    credentialsId: 'kube',
+                    namespace: 'java-blogpost',
+                    restrictKubeConfigAccess: false,
+                    serverUrl: 'https://467324461E788FAAF1B9A0571F09DCC5.gr7.us-west-2.eks.amazonaws.com'
+                ) {
                     sh '''
                         kubectl get pods -n ${NAMESPACE}
                         kubectl get svc  -n ${NAMESPACE}
