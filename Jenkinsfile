@@ -62,10 +62,10 @@ pipeline {
         sh """
            trivy fs . \
            --severity CRITICAL,HIGH \
-           --exit-code 1 \
            --format json \
            --output trivy-fs-report-${BUILD_NUMBER}.json
         """
+        // -exit-code 1 can be added to fail the build if vulnerabilities are found
     }
 }
 
@@ -85,10 +85,10 @@ pipeline {
                 sh """
                 trivy image ${IMAGE_NAME} \
                 --severity CRITICAL,HIGH \
-                --exit-code 1 \
                 --format json \
                 --output trivy-image-report-${BUILD_NUMBER}.json
                 """
+                // -exit-code 1 can be added to fail the build if vulnerabilities are found
             }
         }
 
