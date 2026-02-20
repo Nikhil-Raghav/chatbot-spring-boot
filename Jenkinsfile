@@ -62,6 +62,7 @@ pipeline {
         sh """
            trivy fs . \
            --severity CRITICAL,HIGH \
+           --exit-code 1\
            --format json \
            --output trivy-fs-report-${BUILD_NUMBER}.json
         """
@@ -181,7 +182,7 @@ Build URL: ${env.BUILD_URL}
 Cluster: ${CLUSTER_NAME}
 Namespace: ${NAMESPACE}
 """,
-            to: "nikhilraghavvb20@gmail.com"
+            to: "nikhilraghavvb20@gmail.com, prajwalxr@gmail.com, apoorvayr105@gmail.com, manubhargavi97@gmail.com"
         )
     }
 
@@ -197,7 +198,7 @@ Build URL: ${env.BUILD_URL}
 
 Please check console logs immediately.
 """,
-            to: "nikhilraghavvb20@gmail.com"
+            to: "nikhilraghavvb20@gmail.com, prajwalxr@gmail.com, apoorvayr105@gmail.com, manubhargavi97@gmail.com"
         )
     }
 
