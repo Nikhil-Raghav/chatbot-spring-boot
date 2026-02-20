@@ -127,34 +127,34 @@ pipeline {
 
         stage('Deploy to EKS cluster'){
             steps{
- withKubeConfig(
-    caCertificate: '',
-    clusterName: '',
-    contextName: 'DevOpsDiaries-cluster',
-    credentialsId: 'kube',
-    namespace: 'java-blogpost',
-    restrictKubeConfigAccess: false,
-    serverUrl: 'https://CF2E8DFB22453262703C0CBF06B9B4DA.gr7.us-west-2.eks.amazonaws.com'
-) {
-    sh "sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml"
-    sh "kubectl apply -f deployment.yml -n ${NAMESPACE}"
-}
+                   withKubeConfig(
+                   caCertificate: '',
+                   clusterName: '',
+                   contextName: 'DevOpsDiaries-cluster',
+                   credentialsId: 'kube',
+                   namespace: 'java-blogpost',
+                   restrictKubeConfigAccess: false,
+                  serverUrl: 'https://CF2E8DFB22453262703C0CBF06B9B4DA.gr7.us-west-2.eks.amazonaws.com'
+                               ) {
+                    sh "sed -i 's|replace|${IMAGE_NAME}|g' deployment.yml"
+                    sh "kubectl apply -f deployment.yml -n ${NAMESPACE}"
+                                 }
 
             }
         }
 
-        stage('verify') {
+        /* ---------- Verify Deployment ---------- */
+stage('verify') {
     steps {
-            withKubeConfig(
-    caCertificate: '',
-    clusterName: '',
-    contextName: 'DevOpsDiaries-cluster',
-    credentialsId: 'kube',
-    namespace: 'java-blogpost',
-    restrictKubeConfigAccess: false,
-    serverUrl: 'https://CF2E8DFB22453262703C0CBF06B9B4DA.gr7.us-west-2.eks.amazonaws.com'
-) {
-} {
+        withKubeConfig(
+            caCertificate: '',
+            clusterName: '',
+            contextName: 'DevOpsDiaries-cluster',
+            credentialsId: 'kube',
+            namespace: 'java-blogpost',
+            restrictKubeConfigAccess: false,
+            serverUrl: 'https://CF2E8DFB22453262703C0CBF06B9B4DA.gr7.us-west-2.eks.amazonaws.com'
+        ) {
             sh '''
                 kubectl get pods -n ${NAMESPACE}
                 kubectl get svc  -n ${NAMESPACE}
@@ -162,6 +162,7 @@ pipeline {
         }
     }
 }
+
     }
     post {
     always {
