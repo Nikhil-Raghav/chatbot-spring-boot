@@ -166,3 +166,4 @@ pipeline {
         archiveArtifacts artifacts: 'trivy-*.html', fingerprint: true
     }
 }
+}
