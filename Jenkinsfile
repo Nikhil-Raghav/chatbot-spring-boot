@@ -57,17 +57,18 @@ pipeline {
 
         /* ---------- Trivy FS Scan ---------- */
 
-        stage('Trivy FS Scan') {
-         steps {
-              sh """
-               trivy fs . \
-               --severity CRITICAL \
-               --exit-code 1 \
-               --format html \
-               --output trivy-fs-report-${BUILD_NUMBER}.html
-              """
+  stage('Trivy FS Scan') {
+    steps {
+        sh """
+           trivy fs . \
+           --severity CRITICAL,HIGH \
+           --exit-code 1 \
+           --format json \
+           --output trivy-fs-report-${BUILD_NUMBER}.json
+        """
     }
 }
+
 
 
         stage('docker-build') {
@@ -80,16 +81,17 @@ pipeline {
 
         /* ---------- Trivy Image Scan ---------- */
         stage('Trivy Image Scan') {
-    steps {
-             sh """
+            steps {
+                sh """
                 trivy image ${IMAGE_NAME} \
-                --severity CRITICAL \
+                --severity CRITICAL,HIGH \
                 --exit-code 1 \
-                --format html \
-                --output trivy-image-report-${BUILD_NUMBER}.html
-               """
+                --format json \
+                --output trivy-image-report-${BUILD_NUMBER}.json
+                """
+            }
         }
-  }
+
 
 
         stage('Login to Docker Hub') {
@@ -166,7 +168,7 @@ stage('verify') {
     }
     post {
     always {
-        archiveArtifacts artifacts: 'trivy-*.html', fingerprint: true
+        archiveArtifacts artifacts: 'trivy-*.json', fingerprint: true
     }
 }
 }
